@@ -1,11 +1,11 @@
 # PopularMovies
 Udacity Android Nanodegree Project Part One
 
-Fetches movies from TheMoviesDB api.
-Fetches according to latest releases, popularityand rating
-Movies detail can also be accessed
-onSaveInstanceState implemented
-Check network connection validation implemented
+- Fetches movies from TheMoviesDB api.
+- Fetches according to latest releases, popularity and rating.
+- Movies detail can also be accessed.
+- SaveInstanceState implemented.
+- Check network connection validation implemented.
 
 //API KEY
 
