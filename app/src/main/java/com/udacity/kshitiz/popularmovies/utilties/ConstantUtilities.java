@@ -15,7 +15,7 @@ public class ConstantUtilities {
 
 
     //THE MOVIE DB API KEY
-    final static String MY_MOVIE_DB_API_KEY = "PLACE YOUR API KEY HERE";
+    final static String MY_MOVIE_DB_API_KEY = "PLACE_YOUR_API_KEY_HERE";
 
     final static String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
 
