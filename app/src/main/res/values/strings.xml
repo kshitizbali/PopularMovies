@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Pop Movies</string>
+    <string name="check_internet_connection">Please check your internet connection.</string>
+    <string name="sort">action_sort</string>
+    <string name="movie_poster">Movie Poster</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top Rated</string>
+    <string name="movie_detail">Movie Detail</string>
+    <string name="two_parameters">%1$s %2$s</string>
+    <string name="ratings_param">Rating %1$s/10</string>
+    <string name="release">Release</string>
+    <!--<string name="rating">Rating</string>-->
+    <string name="overview">Overview</string>
+    <string name="latest_release">Latest Releases</string>
+    <string name="popular_movies">Popular</string>
+    <string name="top_rated_movies">Top Rated</string>
+    <string name="movie_list">movies_list</string>
+    <string name="movie_posters">movies_posters</string>
+</resources>
