@@ -1,5 +1,7 @@
 package com.udacity.kshitiz.popularmovies.utilties;
 
+import com.udacity.kshitiz.popularmovies.BuildConfig;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,17 +17,21 @@ public class ConstantUtilities {
 
 
     //THE MOVIE DB API KEY
-    final static String MY_MOVIE_DB_API_KEY = "PLACE_YOUR_API_KEY_HERE";
+    final static String MY_MOVIE_DB_API_KEY = BuildConfig.API_KEY;
 
+    //Launch
     final static String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
 
-    /*final static String QUERY_PARAM = "q";
+    //Sorting
+    final static String BASE_URL_STOCK = "https://api.themoviedb.org/3/movie";
 
-    final static String MOVIE_PARAM = "movie";
+   /* final static String QUERY_PARAM = "q";
 
-    final static String POPULAR_PARAM = "popular";
+    final static String MOVIE_PARAM = "movie";*/
 
-    final static String TOP_RATED_PARAM = "top_rated ";*/
+    final public static String POPULAR_PARAM = "popular";
+
+    final public static String TOP_RATED_PARAM = "top_rated";
 
     final static String API_KEY_PARAM = "api_key";
 

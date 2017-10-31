@@ -76,6 +76,35 @@ public class NetworkUtilities {
 
 
     /**
+     * Builds the URL used to talk to the server
+     *
+     * @param sortBy The sort order that will be queried for.
+     * @return The URL to use to query the  server.
+     */
+    public static URL buildUrlStock(String sortBy) {
+        Uri builtUri = Uri.parse(ConstantUtilities.BASE_URL_STOCK).buildUpon()
+                /*.appendPath(moviesBy)*/
+                .appendQueryParameter(ConstantUtilities.API_KEY_PARAM, ConstantUtilities.MY_MOVIE_DB_API_KEY)
+                .appendEncodedPath(sortBy)
+                /*.appendQueryParameter(FORMAT_PARAM, format)
+                .appendQueryParameter(UNITS_PARAM, units)
+                .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))*/
+                .build();
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built STOCK URI " + url);
+
+        return url;
+    }
+
+
+    /**
      * Builds the URL used to talk to the server on app first launch
      *
      * @return The URL to use to query the  server.
@@ -169,8 +198,8 @@ public class NetworkUtilities {
      * This method returns the a particular json values parsed from the main json HTTP response. for ex title, rating etc
      *
      * @param jsonResponse The HTTP response.
-     * @param position position of the item in the json array.
-     * @param jsonKey key of the item to be extracted from the json response.
+     * @param position     position of the item in the json array.
+     * @param jsonKey      key of the item to be extracted from the json response.
      * @return string array of movie posters parsed from the main json HTTP response.
      */
     public static String getJsonValue(String jsonResponse, int position, String jsonKey) {

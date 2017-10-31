@@ -98,13 +98,15 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
             case R.id.action_dropdown_popular:
 
 
-                loadMoviesBySortOrder(ConstantUtilities.SORT_BY_POPULAR, ConstantUtilities.VOTE_COUNT_RESET, getString(R.string.popular_movies));
+                /*loadMoviesBySortOrder(ConstantUtilities.SORT_BY_POPULAR, ConstantUtilities.VOTE_COUNT_RESET, getString(R.string.popular_movies));*/
+                loadMoviesBySortOrderStock(ConstantUtilities.POPULAR_PARAM, getString(R.string.popular_movies));
 
                 break;
 
             case R.id.action_dropdown_top_rated:
 
-                loadMoviesBySortOrder(ConstantUtilities.SORT_BY_TOP_RATED, ConstantUtilities.VOTE_COUNT_5k, getString(R.string.top_rated_movies));
+                /*loadMoviesBySortOrder(ConstantUtilities.SORT_BY_TOP_RATED, ConstantUtilities.VOTE_COUNT_5k, getString(R.string.top_rated_movies));*/
+                loadMoviesBySortOrderStock(ConstantUtilities.TOP_RATED_PARAM, getString(R.string.top_rated_movies));
 
                 break;
 
@@ -175,9 +177,17 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     }
 
     //sorting movies. By popularity & rating.
-    private void loadMoviesBySortOrder(String sortOrder, String voteCount, String message) {
+   /* private void loadMoviesBySortOrder(String sortOrder, String voteCount, String message) {
 
         new FetchMoviesBySortOrderTask().execute(sortOrder, voteCount, message);
+
+    }*/
+
+
+    //sorting movies. By popularity or rating.
+    private void loadMoviesBySortOrderStock(String sortOrder, String message) {
+
+        new FetchMoviesBySortOrderTaskStock().execute(sortOrder, message);
 
     }
 
@@ -201,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
     }
 
     //Sort Movies Async Task
-    public class FetchMoviesBySortOrderTask extends AsyncTask<String, Void, String> {
+    /*public class FetchMoviesBySortOrderTask extends AsyncTask<String, Void, String> {
 
         private String toastMessage;
 
@@ -221,6 +231,64 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
 
                 URL moviesRequest = NetworkUtilities.buildUrl(sortBy, voteCount);
+
+                try {
+                    *//*String jsonMoviesResponse = NetworkUtilities.getResponseFromHttpUrl(moviesRequest);*//*
+
+                    return NetworkUtilities.getResponseFromHttpUrl(moviesRequest);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
+            } else {
+                if (movieListAdapter != null) {
+                    removePreviousData();
+                }
+                return null;
+            }
+
+
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if (s != null && !s.isEmpty()) {
+                showMoviesData();
+                *//*movieResponse = s;*//*
+                movieListAdapter.setMoviesResponse(s);
+                movieListAdapter.setMoviesPosters(NetworkUtilities.getMoviePoster(s));
+                showToastMsg(toastMessage);
+            } else {
+                showErrorMessage();
+            }
+        }
+
+    }*/
+
+
+    //Sort Movies Async Task
+    public class FetchMoviesBySortOrderTaskStock extends AsyncTask<String, Void, String> {
+
+        private String toastMessage;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+
+            if (NetworkUtilities.isOnlineB()) {
+                String sortBy = strings[0];
+                toastMessage = strings[1];
+
+
+                URL moviesRequest = NetworkUtilities.buildUrlStock(sortBy);
 
                 try {
                     /*String jsonMoviesResponse = NetworkUtilities.getResponseFromHttpUrl(moviesRequest);*/
