@@ -13,7 +13,6 @@ import java.util.Locale;
 
 public class ConstantUtilities {
 
-    /*public static final String BASE_URL = "https://api.themoviedb.org/3/movie";*/
 
 
     //THE MOVIE DB API KEY
