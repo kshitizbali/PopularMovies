@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -137,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
 
         //Intent to next activity
 
-        String mTitle = "", mSynopsis = "", mUserRating = "", mReleaseDate = ConstantUtilities.getCurrentDate();
+        String mTitle = "", mSynopsis = "", mUserRating = "", mReleaseDate = ConstantUtilities.getCurrentDate(), movieId = "";
 
 
         //Check for null
@@ -154,6 +155,9 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         if (NetworkUtilities.getJsonValue(movieResponse, movieListItemPos, ConstantUtilities.RELEASE_DATE) != null) {
             mReleaseDate = NetworkUtilities.getJsonValue(movieResponse, movieListItemPos, ConstantUtilities.RELEASE_DATE);
         }
+        if (NetworkUtilities.getJsonValue(movieResponse, movieListItemPos, ConstantUtilities.ID) != null) {
+            movieId = NetworkUtilities.getJsonValue(movieResponse, movieListItemPos, ConstantUtilities.ID);
+        }
 
 
         Intent intentToStartDetailActivity = new Intent(MainActivity.this, MovieDetails.class);
@@ -162,6 +166,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         intentToStartDetailActivity.putExtra(ConstantUtilities.INTENT_EXTRA_MOVIE_SYNOPSIS, mSynopsis);
         intentToStartDetailActivity.putExtra(ConstantUtilities.INTENT_EXTRA_MOVIE_RATING, mUserRating);
         intentToStartDetailActivity.putExtra(ConstantUtilities.INTENT_EXTRA_MOVIE_RELEASE_DATE, mReleaseDate);
+        intentToStartDetailActivity.putExtra(ConstantUtilities.INTENT_EXTRA_MOVIE_ID, movieId);
 
         startActivity(intentToStartDetailActivity);
 
@@ -284,6 +289,8 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
         protected String doInBackground(String... strings) {
 
             if (NetworkUtilities.isOnlineB()) {
+
+                Log.i("Network", "Online");
                 String sortBy = strings[0];
                 toastMessage = strings[1];
 
@@ -300,6 +307,7 @@ public class MainActivity extends AppCompatActivity implements MovieListAdapter.
                 }
 
             } else {
+                Log.i("Network", "Offline");
                 if (movieListAdapter != null) {
                     removePreviousData();
                 }

@@ -1,7 +1,13 @@
 package com.udacity.kshitiz.popularmovies.utilties;
 
+import android.content.ContentValues;
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+
+import com.facebook.stetho.Stetho;
+import com.udacity.kshitiz.popularmovies.R;
+import com.udacity.kshitiz.popularmovies.data.MoviesContract;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -103,6 +109,28 @@ public class NetworkUtilities {
         return url;
     }
 
+    public static URL buildUrlVideos(String id) {
+        Uri builtUri = Uri.parse(ConstantUtilities.BASE_URL_STOCK).buildUpon()
+                .appendEncodedPath(id)
+                .appendEncodedPath(ConstantUtilities.VIDEOS)
+                .appendQueryParameter(ConstantUtilities.API_KEY_PARAM, ConstantUtilities.MY_MOVIE_DB_API_KEY)
+                .build();
+
+        URL url = null;
+
+        try {
+            url = new URL(builtUri.toString());
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built VIDEOS URI " + url);
+
+
+        return url;
+    }
+
 
     /**
      * Builds the URL used to talk to the server on app first launch
@@ -194,6 +222,30 @@ public class NetworkUtilities {
 
     }
 
+    public static String[] getTrailerName(String jsonResponse) {
+
+        try {
+            JSONObject completeJsonObject = new JSONObject(jsonResponse);
+            JSONArray resultsJsonArray = completeJsonObject.getJSONArray(ConstantUtilities.RESULTS);
+
+            String[] trailerNames = new String[resultsJsonArray.length()];
+
+            for (int i = 0; i < resultsJsonArray.length(); i++) {
+
+                JSONObject movieItem = resultsJsonArray.getJSONObject(i);
+
+                trailerNames[i] = movieItem.getString(ConstantUtilities.TRAILER_NAME);
+            }
+
+            return trailerNames;
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+
+    }
+
     /**
      * This method returns the a particular json values parsed from the main json HTTP response. for ex title, rating etc
      *
@@ -216,6 +268,75 @@ public class NetworkUtilities {
             return "";
         }
 
+    }
+
+
+    public static ContentValues[] getMoviesContentValuesFromJson(Context context, String jsonResponse, String moviesBy) {
+        try {
+
+            JSONObject completeJsonObject = new JSONObject(jsonResponse);
+
+            if (completeJsonObject.has(context.getString(R.string.status_code))) {
+                int errorCode = completeJsonObject.getInt(context.getString(R.string.status_code));
+                switch (errorCode) {
+                    case 34:
+                        Log.e("Code 401 Not Found", "The resource you requested could not be found.");
+                        return null;
+                    case 7:
+                        Log.e("Code 404 Unauthorised", "Invalid API key: You must be granted a valid key.");
+                        return null;
+                    default:
+                        /*Server probably down*/
+                        return null;
+
+
+                }
+            }
+
+            JSONArray resultsJsonArray = completeJsonObject.getJSONArray(ConstantUtilities.RESULTS);
+            ContentValues[] moviesContentValues = new ContentValues[resultsJsonArray.length()];
+
+            for (int i = 0; i < resultsJsonArray.length(); i++) {
+
+                long movieId;
+                String movieName, movieposter, movieRating, movieReleaseDate, movieSynopsis;
+
+                JSONObject movieItem = resultsJsonArray.getJSONObject(i);
+
+                movieId = movieItem.getLong("id");
+                movieName = movieItem.getString("original_title");
+                movieposter = ConstantUtilities.IMAGE_PART_URL + "" + movieItem.getString("poster_path");
+                movieRating = Double.toString(movieItem.getDouble("vote_average"));
+                movieReleaseDate = movieItem.getString("release_date");
+                movieSynopsis = movieItem.getString("overview");
+
+                ContentValues contentValues = new ContentValues();
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_ID, movieId);
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_NAME, movieName);
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_POSTER, movieposter);
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_RATING, movieRating);
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_RELEASE_DATE, movieReleaseDate);
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIE_SYNOPSIS, movieSynopsis);
+                contentValues.put(MoviesContract.MoviesEntry.COLUMN_MOVIES_BY, moviesBy);
+                moviesContentValues[i] = contentValues;
+
+
+            }
+
+
+            return moviesContentValues;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
+    public static void initializeStetho(Context context) {
+
+        Stetho.initialize(Stetho.newInitializerBuilder(context)
+                .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(context))
+                .build());
     }
 
 

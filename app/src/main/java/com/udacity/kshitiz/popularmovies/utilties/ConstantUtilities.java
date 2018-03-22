@@ -1,10 +1,16 @@
 package com.udacity.kshitiz.popularmovies.utilties;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+
 import com.udacity.kshitiz.popularmovies.BuildConfig;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -12,7 +18,6 @@ import java.util.Locale;
  */
 
 public class ConstantUtilities {
-
 
 
     //THE MOVIE DB API KEY
@@ -30,7 +35,11 @@ public class ConstantUtilities {
 
     final public static String POPULAR_PARAM = "popular";
 
+    final public static String KEY = "key";
+
     final public static String TOP_RATED_PARAM = "top_rated";
+
+    final public static String MOVIES_ON_START_UP = "movies_first_launch";
 
     final static String API_KEY_PARAM = "api_key";
 
@@ -42,7 +51,13 @@ public class ConstantUtilities {
 
     final static String IMAGE_PART_URL = "https://image.tmdb.org/t/p/w185/";
 
+    final static String VIDEO_PART_URL = "https://www.youtube.com/watch?v=";
+
     final static String POSTER_PATH = "poster_path";
+
+    final static String VIDEO_KEY = "key";
+
+    final static String TRAILER_NAME = "name";
 
     final static String SORT_BY = "sort_by";
 
@@ -74,7 +89,17 @@ public class ConstantUtilities {
     final public static String INTENT_EXTRA_MOVIE_RATING = "movie_rating";
     final public static String INTENT_EXTRA_MOVIE_SYNOPSIS = "movie_synopsis";
     final public static String INTENT_EXTRA_MOVIE_RELEASE_DATE = "release_date";
+    final public static String INTENT_EXTRA_MOVIE_ID = "movie_id";
+    final public static String INTENT_EXTRA_FAV_FLAG = "fav-flag";
 
+    final public static int FLAG_FAV = 1;
+    final public static int FLAG_NOT_FAV = 0;
+
+    final public static String VIDEOS = "videos";
+
+    final public static String ID = "id";
+
+    final public static String YOUTUBE_PACKAGE_NAME = "com.google.android.youtube";
 
 
     //get Current Date
@@ -91,6 +116,15 @@ public class ConstantUtilities {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         return format.format(date);
     }
+
+    public static boolean isCallable(Context context, Intent intent) {
+        List<ResolveInfo> list = context.getPackageManager().queryIntentActivities(intent,
+                PackageManager.MATCH_DEFAULT_ONLY);
+        return list.size() > 0;
+    }
+
+
+
 
 
 }
