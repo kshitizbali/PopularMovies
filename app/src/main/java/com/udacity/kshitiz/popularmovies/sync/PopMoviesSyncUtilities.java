@@ -28,7 +28,7 @@ public class PopMoviesSyncUtilities {
     private static final int SYNC_INTERVAL_SECONDS = (int) TimeUnit.HOURS.toSeconds(SYNC_INTERVAL_HOURS);
     private static final int SYNC_FLEXTIME_SECONDS = SYNC_INTERVAL_SECONDS / 3;
 
-    private static boolean sInitialized = false;
+    private static boolean sInitialized;
     private static int ID_LOADER;
 
     private static final String POP_MOVIES_SYNC_TAG = "pop-movies-sync";
@@ -58,9 +58,9 @@ public class PopMoviesSyncUtilities {
 
     synchronized public static void initialize(final Context context, final int loaderId, final String moviesBy) {
 
-        if (sInitialized) return;
+      /*  if (sInitialized) return;
 
-        sInitialized = true;
+        sInitialized = true;*/
 
         ID_LOADER = loaderId;
         scheduleFirebaseJobDispatcherSync(context);

@@ -116,4 +116,6 @@
     <string name="fav_on">fav-on</string>
     <string name="fav_off">fav-off</string>
     <string name="play_trailer">Play trailer</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
 </resources>

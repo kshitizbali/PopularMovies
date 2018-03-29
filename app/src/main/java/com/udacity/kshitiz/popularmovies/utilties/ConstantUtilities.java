@@ -27,7 +27,7 @@ public class ConstantUtilities {
     final static String BASE_URL = "https://api.themoviedb.org/3/discover/movie";
 
     //Sorting
-    final static String BASE_URL_STOCK = "https://api.themoviedb.org/3/movie";
+    final static String BASE_URL_STOCK = "http://api.themoviedb.org/3/movie";
 
    /* final static String QUERY_PARAM = "q";
 
@@ -35,7 +35,11 @@ public class ConstantUtilities {
 
     final public static String POPULAR_PARAM = "popular";
 
+    final public static String NOW_PLAYING = "now_playing";
+
     final public static String KEY = "key";
+
+    final public static String URL = "url";
 
     final public static String TOP_RATED_PARAM = "top_rated";
 
@@ -60,6 +64,9 @@ public class ConstantUtilities {
     final static String TRAILER_NAME = "name";
 
     final static String SORT_BY = "sort_by";
+
+    public final static String CONTENT = "content";
+    public final static String AUTHOR = "author";
 
     final static String VOTE_COUNT_GTE = "vote_count.gte";
 
@@ -101,6 +108,8 @@ public class ConstantUtilities {
 
     final public static String YOUTUBE_PACKAGE_NAME = "com.google.android.youtube";
 
+    final public static String REVIEWS = "reviews";
+
 
     //get Current Date
     public static String getCurrentDate() {
@@ -122,9 +131,6 @@ public class ConstantUtilities {
                 PackageManager.MATCH_DEFAULT_ONLY);
         return list.size() > 0;
     }
-
-
-
 
 
 }

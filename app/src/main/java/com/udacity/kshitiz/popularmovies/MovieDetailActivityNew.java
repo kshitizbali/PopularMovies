@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.udacity.kshitiz.popularmovies.adapter.MoviesReviewsAdapter;
 import com.udacity.kshitiz.popularmovies.adapter.MoviesVideosAdapter;
 import com.udacity.kshitiz.popularmovies.data.MoviesContract;
 import com.udacity.kshitiz.popularmovies.utilties.ConstantUtilities;
@@ -31,7 +32,7 @@ import com.udacity.kshitiz.popularmovies.utilties.NetworkUtilities;
 import java.io.IOException;
 import java.net.URL;
 
-public class MovieDetailActivityNew extends AppCompatActivity implements MoviesVideosAdapter.MoviesVideosAdapterOnClickHandler {
+public class MovieDetailActivityNew extends AppCompatActivity implements MoviesVideosAdapter.MoviesVideosAdapterOnClickHandler, MoviesReviewsAdapter.MoviesReviewsAdapterOnClickHandler {
 
     private TextView tvReleaseDate, tvUserRating, tvSynopsis;
     private ImageView ivMoviePoster;
@@ -41,6 +42,9 @@ public class MovieDetailActivityNew extends AppCompatActivity implements MoviesV
     private ProgressBar progressBar;
     private TextView tvError;
     private MoviesVideosAdapter moviesVideosAdapter;
+
+    private RecyclerView rv_movie_reviews;
+    private MoviesReviewsAdapter moviesReviewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,7 @@ public class MovieDetailActivityNew extends AppCompatActivity implements MoviesV
         ivMoviePoster = (ImageView) findViewById(R.id.ivMoviePoster);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         tvError = (TextView) findViewById(R.id.tvError);
+        rv_movie_reviews = (RecyclerView) findViewById(R.id.rv_movie_reviews);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -74,8 +79,13 @@ public class MovieDetailActivityNew extends AppCompatActivity implements MoviesV
         moviesVideosAdapter = new MoviesVideosAdapter(this, this);
         rv_movie_trailers.setAdapter(moviesVideosAdapter);
 
+        rv_movie_reviews.setLayoutManager(new LinearLayoutManager(this));
+        moviesReviewsAdapter = new MoviesReviewsAdapter(this, this);
+        rv_movie_reviews.setAdapter(moviesReviewsAdapter);
+
         setIntentData();
         new FetchMoviesTrailersTask().execute();
+        new FetchMovieReviewsTask().execute();
     }
 
     @Override
@@ -235,12 +245,14 @@ public class MovieDetailActivityNew extends AppCompatActivity implements MoviesV
 
     //shows movies list
     private void showMoviesData() {
+        rv_movie_reviews.setVisibility(View.VISIBLE);
         rv_movie_trailers.setVisibility(View.VISIBLE);
         tvError.setVisibility(View.INVISIBLE);
     }
 
     //shows error messages
     private void showErrorMessage() {
+        rv_movie_reviews.setVisibility(View.INVISIBLE);
         rv_movie_trailers.setVisibility(View.INVISIBLE);
         tvError.setVisibility(View.VISIBLE);
     }
@@ -275,6 +287,15 @@ public class MovieDetailActivityNew extends AppCompatActivity implements MoviesV
         }
 
 
+    }
+
+    @Override
+    public void onClickReviews(int movieListItemPosition, String moviesResponseList) {
+
+        if (NetworkUtilities.getJsonValue(moviesResponseList, movieListItemPosition, ConstantUtilities.URL) != null && !NetworkUtilities.getJsonValue(moviesResponseList, movieListItemPosition, ConstantUtilities.URL).isEmpty()) {
+
+            readMovieReview(NetworkUtilities.getJsonValue(moviesResponseList, movieListItemPosition, ConstantUtilities.URL));
+        }
     }
 
 
@@ -331,12 +352,72 @@ public class MovieDetailActivityNew extends AppCompatActivity implements MoviesV
     }
 
 
+    public class FetchMovieReviewsTask extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+            if (NetworkUtilities.isOnlineB()) {
+
+                URL moviesRequest = NetworkUtilities.buildUrlReviews(movieId);
+
+                try {
+                    /*String jsonResponse = NetworkUtilities.getResponseFromHttpUrl(moviesRequest);*/
+
+
+                    return NetworkUtilities.getResponseFromHttpUrl(moviesRequest);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } else {
+                if (moviesVideosAdapter != null) {
+                    removePreviousData();
+                }
+                return null;
+
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            progressBar.setVisibility(View.INVISIBLE);
+            if (s != null && !s.isEmpty()) {
+                showMoviesData();
+                /*movieResponse = s;*/
+                moviesReviewsAdapter.setMoviesResponse(s);
+                moviesReviewsAdapter.setMoviesReviews(NetworkUtilities.getValueList(s, ConstantUtilities.CONTENT));
+                moviesReviewsAdapter.setMoviesReviewsAuthor(NetworkUtilities.getValueList(s, ConstantUtilities.AUTHOR));
+            } else {
+                showErrorMessage();
+            }
+        }
+    }
+
+
     public void watchYoutubeVideo(String id) {
         Intent appIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:" + id));
         Intent webIntent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse("http://www.youtube.com/watch?v=" + id));
         try {
             startActivity(appIntent);
+        } catch (ActivityNotFoundException ex) {
+            startActivity(webIntent);
+        }
+    }
+
+    public void readMovieReview(String url) {
+        Intent webIntent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse(url));
+        try {
+            startActivity(webIntent);
         } catch (ActivityNotFoundException ex) {
             startActivity(webIntent);
         }

@@ -2,6 +2,8 @@ package com.udacity.kshitiz.popularmovies.utilties;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.util.Log;
 
@@ -131,6 +133,28 @@ public class NetworkUtilities {
         return url;
     }
 
+    public static URL buildUrlReviews(String id) {
+        Uri builtUri = Uri.parse(ConstantUtilities.BASE_URL_STOCK).buildUpon()
+                .appendEncodedPath(id)
+                .appendEncodedPath(ConstantUtilities.REVIEWS)
+                .appendQueryParameter(ConstantUtilities.API_KEY_PARAM, ConstantUtilities.MY_MOVIE_DB_API_KEY)
+                .build();
+
+        URL url = null;
+
+        try {
+            url = new URL(builtUri.toString());
+
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built REVIEWS URI " + url);
+
+
+        return url;
+    }
+
 
     /**
      * Builds the URL used to talk to the server on app first launch
@@ -138,17 +162,24 @@ public class NetworkUtilities {
      * @return The URL to use to query the  server.
      */
     public static URL buildLaunchUrl() {
-        Uri builtUri = Uri.parse(ConstantUtilities.BASE_URL).buildUpon()
+        Uri builtUri = Uri.parse(ConstantUtilities.BASE_URL_STOCK).buildUpon()
                 /*.appendPath(moviesBy)*/
+                .appendPath(ConstantUtilities.NOW_PLAYING)
                 .appendQueryParameter(ConstantUtilities.API_KEY_PARAM, ConstantUtilities.MY_MOVIE_DB_API_KEY)
-                .appendQueryParameter(ConstantUtilities.LANGUAGE, ConstantUtilities.LANGUAGE_SELECTED)
+
+
+                /*.appendQueryParameter(ConstantUtilities.LANGUAGE, ConstantUtilities.LANGUAGE_SELECTED)
                 .appendQueryParameter(ConstantUtilities.PRIMARY_RELEASE_DATE_GTE, ConstantUtilities.getTwoMonthPriorDate())
-                .appendQueryParameter(ConstantUtilities.PRIMARY_RELEASE_DATE_LTE, ConstantUtilities.getCurrentDate())
+                .appendQueryParameter(ConstantUtilities.PRIMARY_RELEASE_DATE_LTE, ConstantUtilities.getCurrentDate())*/
+
+                //OLD
                 /*.appendQueryParameter(ConstantUtilities.SORT_BY, sortBy)
                 .appendQueryParameter(ConstantUtilities.VOTE_COUNT_GTE, voteCount)*/
                 /*.appendQueryParameter(FORMAT_PARAM, format)
                 .appendQueryParameter(UNITS_PARAM, units)
                 .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))*/
+                //
+
                 .build();
 
         URL url = null;
@@ -172,6 +203,7 @@ public class NetworkUtilities {
      * @throws IOException Related to network and stream reading
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
+
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             InputStream in = urlConnection.getInputStream();
@@ -235,6 +267,30 @@ public class NetworkUtilities {
                 JSONObject movieItem = resultsJsonArray.getJSONObject(i);
 
                 trailerNames[i] = movieItem.getString(ConstantUtilities.TRAILER_NAME);
+            }
+
+            return trailerNames;
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+
+    }
+
+    public static String[] getValueList(String jsonResponse, String value) {
+
+        try {
+            JSONObject completeJsonObject = new JSONObject(jsonResponse);
+            JSONArray resultsJsonArray = completeJsonObject.getJSONArray(ConstantUtilities.RESULTS);
+
+            String[] trailerNames = new String[resultsJsonArray.length()];
+
+            for (int i = 0; i < resultsJsonArray.length(); i++) {
+
+                JSONObject movieItem = resultsJsonArray.getJSONObject(i);
+
+                trailerNames[i] = movieItem.getString(value);
             }
 
             return trailerNames;
@@ -337,6 +393,41 @@ public class NetworkUtilities {
         Stetho.initialize(Stetho.newInitializerBuilder(context)
                 .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(context))
                 .build());
+    }
+
+
+
+    /*
+ * Checks if WiFi or 3G is enabled or not. server
+ */
+    public static boolean isInternetAvailable(Context context) {
+        return isWiFiAvailable(context) || isMobileDateAvailable(context);
+    }
+
+    /**
+     * Checks if the WiFi is enabled on user's device
+     */
+    public static boolean isWiFiAvailable(Context context) {
+        // ConnectivityManager is used to check available wifi network.
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network_info = connectivityManager.getActiveNetworkInfo();
+        // Wifi network is available.
+        return network_info != null
+                && network_info.getType() == ConnectivityManager.TYPE_WIFI;
+    }
+
+    /**
+     * Checks if the mobile data is enabled on user's device
+     */
+    public static boolean isMobileDateAvailable(Context context) {
+        // ConnectivityManager is used to check available 3G network.
+        ConnectivityManager connectivityManager = (ConnectivityManager) context
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        // 3G network is available.
+        return networkInfo != null
+                && networkInfo.getType() == ConnectivityManager.TYPE_MOBILE;
     }
 
 
